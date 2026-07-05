@@ -14,6 +14,7 @@ from download.youtube_downloader import (
     YoutubeDownloader
 )
 from core.models import DownloadJob, Song
+from storage.download_repository import DownloadRepository
 
 song = Song(
     artist="Metallica",
@@ -200,11 +201,12 @@ def download_queue(file: str):
 
     provider = YoutubeProvider()
     manager = DownloadManager(workers=4)
+    repository = DownloadRepository()
     jobs = []
 
     for song in songs:
         try:
-            print(f"Creating job: {song.artist} - {song.title}")
+            print(f"Checking: {song.artist} - {song.title}")
 
             candidates = provider.search(song.artist, song.title)
 
@@ -216,6 +218,27 @@ def download_queue(file: str):
                 candidate.score = Scorer.score(song, candidate)
 
             candidates.sort(key=lambda c: c.score, reverse=True)
+
+            if repository.exists(
+                song.artist,
+                song.title,
+            ):
+
+                print(
+                    f"SKIP: "
+                    f"{song.artist}"
+                    f" - "
+                    f"{song.title}"
+                )
+
+                continue
+
+            print(
+                f"Job created: "
+                f"{song.artist}"
+                f" - "
+                f"{song.title}"
+            )
 
             jobs.append(
                 DownloadJob(

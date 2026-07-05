@@ -13,6 +13,9 @@ from logs.services.logger_service import (
     LoggerService,
 )
 
+from storage.download_repository import (
+    DownloadRepository
+)
 
 class DownloadManager:
 
@@ -25,6 +28,10 @@ class DownloadManager:
 
         self.downloader = (
             YoutubeDownloader()
+        )
+
+        self.repository = (
+            DownloadRepository()
         )
 
         self.logger = (
@@ -71,6 +78,10 @@ class DownloadManager:
                             result
                         )
 
+                        self.repository.save(
+                            result
+                        )
+
                         print()
 
                         print(
@@ -88,6 +99,10 @@ class DownloadManager:
                         failed.append(result)
 
                         self.logger.error(
+                            result
+                        )
+
+                        self.repository.save(
                             result
                         )
 
