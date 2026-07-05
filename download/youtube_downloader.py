@@ -6,7 +6,6 @@ import time
 
 class YoutubeDownloader:
 
-    TEMP_DIR = Path("temp")
     OUTPUT_DIR = Path("downloads")
 
     def __init__(self):
