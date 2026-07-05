@@ -1,0 +1,23 @@
+workers: 4
+
+download:
+  format: mp3
+  bitrate: 320
+
+duplicates:
+  threshold: 92
+
+retries:
+  max_attempts: 3
+
+search:
+  skip_live: true
+  skip_cover: true
+  skip_remaster: true
+
+paths:
+  downloads: "./downloads"
+  logs: "./logs"
+
+database:
+  url: "sqlite:///music.db"

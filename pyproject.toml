@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "musicdl"
+version = "0.1.0"
+description = "Intelligent music downloader"
+authors = ["User"]
+packages = [{include = "cli"}, {include = "config"}, {include = "core"}, {include = "database"}, {include = "downloader"}, {include = "providers"}]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.14"
+
+yt-dlp = "*"
+sqlalchemy = "*"
+alembic = "*"
+rapidfuzz = "*"
+mutagen = "*"
+typer = "*"
+rich = "*"
+pydantic = "*"
+pydantic-settings = "*"
+structlog = "*"
+aiofiles = "*"
+pyyaml = "*"
+unidecode = "^1.4.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "*"
+pytest-asyncio = "*"
+ruff = "*"
+mypy = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

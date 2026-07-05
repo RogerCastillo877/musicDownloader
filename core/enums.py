@@ -1,0 +1,15 @@
+from enum import Enum
+
+
+class JobStatus(str, Enum):
+    NEW = "NEW"
+    NORMALIZED = "NORMALIZED"
+    SEARCHING = "SEARCHING"
+    SCORING = "SCORING"
+    QUEUED = "QUEUED"
+    DOWNLOADING = "DOWNLOADING"
+    CONVERTING = "CONVERTING"
+    TAGGING = "TAGGING"
+    SUCCESS = "SUCCESS"
+    FAILED = "FAILED"
+    SKIPPED = "SKIPPED"
