@@ -81,3 +81,22 @@ class DownloadRepository:
         conn.commit()
 
         conn.close()
+    
+    def get_failed(self):
+
+        conn = get_connection()
+
+        rows = conn.execute(
+            """
+            SELECT
+                artist,
+                title
+            FROM downloads
+            WHERE success=0
+            ORDER BY artist,title
+            """
+        ).fetchall()
+
+        conn.close()
+
+        return rows

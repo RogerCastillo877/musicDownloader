@@ -1,4 +1,5 @@
 from download.download_manager import DownloadManager
+from logs.services.scorer import MIN_CONFIDENCE_SCORE
 import typer
 
 from cli.ui import info
@@ -219,6 +220,28 @@ def download_queue(file: str):
 
             candidates.sort(key=lambda c: c.score, reverse=True)
 
+            winner = candidates[0]
+
+            if winner.score < MIN_CONFIDENCE_SCORE:
+
+                print()
+
+                print(
+                    "NO CONFIDENT MATCH"
+                )
+
+                print(
+                    f"Best candidate: "
+                    f"{winner.score:.2f}"
+                    f"  "
+                    f"{winner.title}"
+                )
+                print(
+                    "SKIPPING DOWNLOAD"
+                )
+
+                continue
+
             if repository.exists(
                 song.artist,
                 song.title,
@@ -233,17 +256,10 @@ def download_queue(file: str):
 
                 continue
 
-            print(
-                f"Job created: "
-                f"{song.artist}"
-                f" - "
-                f"{song.title}"
-            )
-
             jobs.append(
                 DownloadJob(
                     song=song,
-                    candidate=candidates[0],
+                    candidate=winner,
                 )
             )
 
@@ -258,3 +274,46 @@ def download_queue(file: str):
         print()
 
     manager.process(jobs)
+
+@app.command()
+def retry_errors():
+
+    from core.models import Song
+    from download.download_manager import (
+        DownloadManager
+    )
+
+    repository = (
+        DownloadRepository()
+    )
+
+    rows = (
+        repository.get_failed()
+    )
+
+    songs = []
+
+    for row in rows:
+
+        songs.append(
+            Song(
+                artist=row["artist"],
+                title=row["title"],
+            )
+        )
+
+    print()
+
+    print(
+        f"FOUND "
+        f"{len(songs)} "
+        f"FAILED SONGS"
+    )
+
+    manager = (
+        DownloadManager()
+    )
+
+    manager.process(
+        songs
+    )
