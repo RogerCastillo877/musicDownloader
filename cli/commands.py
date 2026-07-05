@@ -349,3 +349,24 @@ def retry_errors():
     manager.process(
         songs
     )
+
+@app.command()
+def reset_test():
+
+    import shutil
+    from pathlib import Path
+
+    db = Path("music_downloader.db")
+    if db.exists():
+        db.unlink()
+
+    downloads = Path("downloads")
+    for file in downloads.glob("*"):
+        if file.is_file():
+            file.unlink()
+
+    logs = Path("logs")
+    for file in logs.glob("*.log"):
+        file.unlink()
+
+    print("Test environment reset")

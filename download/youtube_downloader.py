@@ -4,19 +4,12 @@ from yt_dlp import YoutubeDL
 from core.models import DownloadResult, DownloadStatus
 import time
 
-class YoutubeDownloader:
 
+class YoutubeDownloader:
     OUTPUT_DIR = Path("downloads")
 
     def __init__(self):
-
-        self.TEMP_DIR.mkdir(
-            exist_ok=True
-        )
-
-        self.OUTPUT_DIR.mkdir(
-            exist_ok=True
-        )
+        self.OUTPUT_DIR.mkdir(exist_ok=True)
 
     def download(
       self,
