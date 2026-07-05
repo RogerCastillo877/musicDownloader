@@ -15,9 +15,18 @@ search:
   skip_cover: true
   skip_remaster: true
 
+scoring:
+  min_confidence: 70
+  ambiguous_delta: 5
+
 paths:
   downloads: "./downloads"
   logs: "./logs"
 
 database:
   url: "sqlite:///music.db"
+
+logging:
+  verbose: true
+  save_not_found: true
+  save_ambiguous: true

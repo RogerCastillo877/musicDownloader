@@ -1,5 +1,5 @@
 from rapidfuzz import fuzz
-from core.audit import AuditLogger
+from logs.services.logger_service import LoggerService
 
 
 class DuplicateDetector:
@@ -72,11 +72,11 @@ class DuplicateDetector:
                 )
 
                 if score >= threshold:
-                  AuditLogger.duplicate(
-                      existing,
-                      candidate,
-                      score,
-                  )
+                LoggerService().duplicate(
+                    existing,
+                    candidate,
+                    score,
+                )
 
             if not duplicate:
                 result.append(candidate)

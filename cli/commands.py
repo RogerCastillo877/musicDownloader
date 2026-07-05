@@ -1,25 +1,22 @@
 from download.download_manager import DownloadManager
-from logs.services.scorer import MIN_CONFIDENCE_SCORE
 import typer
 
 from cli.ui import info
 from config.settings import load_settings
 from core.parser import SongParser
 from core.normalizer import Normalizer
-from core.duplicate_detector import DuplicateDetector
+from services.duplicate_detector import DuplicateDetector
 from providers.youtube_provider import YoutubeProvider
-from core.scorer import Scorer
-from core.parser import SongParser
-from core.ranking_analyzer import RankingAnalyzer
+from services.scorer import Scorer
+from services.ranking_analyzer import RankingAnalyzer
 from download.youtube_downloader import (
-    YoutubeDownloader
+    YoutubeDownloader,
 )
 from core.models import DownloadJob, DownloadResult, DownloadStatus, Song
 from storage.download_repository import DownloadRepository
 from datetime import datetime
-from logs.services.logger_service import (
-    LoggerService,
-)
+from logs.services.logger_service import LoggerService
+from config.settings import load_settings, Settings
 
 song = Song(
     artist="Metallica",
@@ -27,6 +24,10 @@ song = Song(
 )
 
 app = typer.Typer()
+
+
+def get_settings() -> Settings:
+    return load_settings()
 
 
 @app.command()
@@ -105,9 +106,7 @@ def search(file: str):
             reverse=True,
         )
 
-        from core.ambiguous_logger import (
-            AmbiguousLogger,
-        )
+        logger = LoggerService()
 
         if len(scored) > 1:
 
@@ -119,10 +118,10 @@ def search(file: str):
                 - second.score
             )
 
-            if difference < 10:
+            if difference < settings.scoring.ambiguous_delta:
                 winner.is_ambiguous = True
 
-                AmbiguousLogger.log(
+                logger.ambiguous(
                     song,
                     winner,
                     second,
@@ -204,8 +203,9 @@ def download_queue(file: str):
     
     songs = SongParser.parse_file(file)
 
+    settings = load_settings()
     provider = YoutubeProvider()
-    manager = DownloadManager(workers=4)
+    manager = DownloadManager(workers=settings.workers)
     repository = DownloadRepository()
     jobs = []
     logger = LoggerService()
@@ -227,7 +227,7 @@ def download_queue(file: str):
 
             winner = candidates[0]
 
-            if winner.score < MIN_CONFIDENCE_SCORE:
+            if winner.score < settings.scoring.min_confidence:
 
                 result = DownloadResult(
                     song=song,

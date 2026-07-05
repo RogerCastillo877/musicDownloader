@@ -11,3 +11,5 @@ def test_load_settings_uses_project_relative_path(monkeypatch, tmp_path):
     assert settings.workers == 4
     assert settings.download.format == "mp3"
     assert settings.paths.downloads == "./downloads"
+    assert settings.scoring.min_confidence == 70
+    assert settings.scoring.ambiguous_delta == 5

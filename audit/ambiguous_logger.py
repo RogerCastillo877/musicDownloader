@@ -3,29 +3,13 @@ from datetime import datetime
 
 
 class AmbiguousLogger:
-
     LOG_DIR = Path("logs")
 
     @classmethod
-    def log(
-        cls,
-        song,
-        winner,
-        second,
-    ):
-
-        cls.LOG_DIR.mkdir(
-            exist_ok=True
-        )
-
+    def log(cls, song, winner, second):
+        cls.LOG_DIR.mkdir(exist_ok=True)
         path = cls.LOG_DIR / "ambiguous.log"
-
-        with open(
-            path,
-            "a",
-            encoding="utf-8",
-        ) as f:
-
+        with open(path, "a", encoding="utf-8") as f:
             f.write(
                 f"""
 [{datetime.now().isoformat()}]
@@ -42,7 +26,7 @@ SECOND:
 {second.title}
 
 DIFFERENCE:
-{winner.score-second.score:.2f}
+{winner.score - second.score:.2f}
 
 STATUS:
 AMBIGUOUS

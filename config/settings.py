@@ -1,8 +1,7 @@
 from pathlib import Path
 
 import yaml
-from pydantic import BaseModel
-
+from pydantic import BaseModel, Field
 
 class DownloadSettings(BaseModel):
     format: str
@@ -31,6 +30,10 @@ class PathSettings(BaseModel):
 class DatabaseSettings(BaseModel):
     url: str
 
+class ScoringSettings(BaseModel):
+    min_confidence: int = 70
+    ambiguous_delta: int = 5
+
 
 class Settings(BaseModel):
     workers: int
@@ -38,6 +41,7 @@ class Settings(BaseModel):
     duplicates: DuplicateSettings
     retries: RetrySettings
     search: SearchSettings
+    scoring: ScoringSettings = Field(default_factory=ScoringSettings)
     paths: PathSettings
     database: DatabaseSettings
 

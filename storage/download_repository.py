@@ -110,3 +110,39 @@ class DownloadRepository:
         conn.commit()
 
         conn.close()
+
+    def get_failed(self):
+
+        conn = get_connection()
+
+        rows = conn.execute(
+            """
+            SELECT DISTINCT
+                artist,
+                title
+            FROM downloads
+            WHERE status='failed'
+            """
+        ).fetchall()
+
+        conn.close()
+
+        return rows
+    
+    def get_not_found(self):
+
+        conn = get_connection()
+
+        rows = conn.execute(
+            """
+            SELECT DISTINCT
+                artist,
+                title
+            FROM downloads
+            WHERE status='not_found'
+            """
+        ).fetchall()
+
+        conn.close()
+
+        return rows

@@ -85,6 +85,24 @@ class LoggerService:
             ),
         )
 
+    def duplicate(
+        self,
+        original,
+        duplicate,
+        similarity,
+    ):
+
+        self._write(
+            "duplicates.log",
+            (
+                f"{datetime.now().isoformat()} | "
+                f"SKIPPED_DUPLICATE | "
+                f"{original.artist} - {original.title} | "
+                f"{duplicate.artist} - {duplicate.title} | "
+                f"{similarity}"
+            ),
+        )
+
     def summary(
         self,
         requested,
