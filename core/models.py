@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from dataclasses import dataclass
 from typing import Optional
 from datetime import datetime
+from enum import Enum
 
 @dataclass(slots=True)
 class SongRequest:
@@ -61,12 +62,26 @@ class DownloadJob:
 
     status: str = "pending"
 
+class DownloadStatus(
+    Enum,
+):
+
+    SUCCESS = "success"
+
+    FAILED = "failed"
+
+    NOT_FOUND = "not_found"
+
+    SKIPPED = "skipped"
+
+    AMBIGUOUS = "ambiguous"
+
 @dataclass(slots=True)
 class DownloadResult:
 
     song: Song
 
-    success: bool
+    status: DownloadStatus
 
     filename: str | None = None
 

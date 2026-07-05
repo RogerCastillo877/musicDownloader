@@ -72,7 +72,7 @@ class DownloadRepository:
                 result.codec,
                 result.bitrate,
                 result.duration_seconds,
-                int(result.success),
+                result.status.value,
                 result.error,
                 result.finished_at,
             ),
@@ -82,21 +82,31 @@ class DownloadRepository:
 
         conn.close()
     
-    def get_failed(self):
+    def delete_failed(
+        self,
+        artist,
+        title,
+    ):
 
         conn = get_connection()
 
-        rows = conn.execute(
+        conn.execute(
             """
-            SELECT
-                artist,
-                title
+            DELETE
             FROM downloads
-            WHERE success=0
-            ORDER BY artist,title
-            """
-        ).fetchall()
+            WHERE
+                artist=?
+            AND
+                title=?
+            AND
+                success=0
+            """,
+            (
+                artist,
+                title,
+            ),
+        )
+
+        conn.commit()
 
         conn.close()
-
-        return rows

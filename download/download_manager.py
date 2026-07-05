@@ -5,6 +5,7 @@ from concurrent.futures import (
     as_completed,
 )
 
+from core.models import DownloadStatus
 from download.youtube_downloader import (
     YoutubeDownloader,
 )
@@ -70,7 +71,11 @@ class DownloadManager:
                         future.result()
                     )
 
-                    if result.success:
+                    if (
+                        result.status
+                        ==
+                        DownloadStatus.SUCCESS
+                    ):
 
                         success.append(result)
 
@@ -94,7 +99,11 @@ class DownloadManager:
                             f"{result.song.title}"
                         )
 
-                    else:
+                    elif (
+                        result.status
+                        ==
+                        DownloadStatus.FAILED
+                    ):
 
                         failed.append(result)
 

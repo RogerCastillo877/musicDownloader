@@ -1,7 +1,7 @@
 from datetime import datetime
 from pathlib import Path
 from yt_dlp import YoutubeDL
-from core.models import DownloadResult
+from core.models import DownloadResult, DownloadStatus
 import time
 
 class YoutubeDownloader:
@@ -71,16 +71,10 @@ class YoutubeDownloader:
                 )
 
                 return DownloadResult(
-                    
-                    duration_seconds=
-                        round(
-                            time.time() - start,
-                            2,
-                        ),
 
                     song=song,
 
-                    success=True,
+                    success=DownloadStatus.SUCCESS,
 
                     downloaded_title=
                         info.get("title"),
@@ -99,6 +93,12 @@ class YoutubeDownloader:
                     
                     finished_at=
                         datetime.now().isoformat(),
+                    
+                    duration_seconds=
+                        round(
+                            time.time() - start,
+                            2,
+                        ),
                 )
 
         except Exception as e:
@@ -107,7 +107,7 @@ class YoutubeDownloader:
 
                 song=song,
 
-                success=False,
+                success=DownloadStatus.FAILED,
 
                 error=str(e),
 

@@ -14,8 +14,12 @@ from core.ranking_analyzer import RankingAnalyzer
 from download.youtube_downloader import (
     YoutubeDownloader
 )
-from core.models import DownloadJob, Song
+from core.models import DownloadJob, DownloadResult, DownloadStatus, Song
 from storage.download_repository import DownloadRepository
+from datetime import datetime
+from logs.services.logger_service import (
+    LoggerService,
+)
 
 song = Song(
     artist="Metallica",
@@ -204,6 +208,7 @@ def download_queue(file: str):
     manager = DownloadManager(workers=4)
     repository = DownloadRepository()
     jobs = []
+    logger = LoggerService()
 
     for song in songs:
         try:
@@ -224,6 +229,35 @@ def download_queue(file: str):
 
             if winner.score < MIN_CONFIDENCE_SCORE:
 
+                result = DownloadResult(
+                    song=song,
+
+                    status=
+                        DownloadStatus.NOT_FOUND,
+
+                    downloaded_title=
+                        winner.title,
+
+                    error=
+                        (
+                            "Low confidence "
+                            f"({winner.score:.2f})"
+                        ),
+
+                    finished_at=
+                        datetime.now()
+                        .isoformat(),
+                )
+
+                repository.save(
+                    result
+                )
+
+                logger.not_found(
+                    song,
+                    winner,
+                )
+
                 print()
 
                 print(
@@ -236,6 +270,7 @@ def download_queue(file: str):
                     f"  "
                     f"{winner.title}"
                 )
+
                 print(
                     "SKIPPING DOWNLOAD"
                 )
@@ -278,11 +313,6 @@ def download_queue(file: str):
 @app.command()
 def retry_errors():
 
-    from core.models import Song
-    from download.download_manager import (
-        DownloadManager
-    )
-
     repository = (
         DownloadRepository()
     )
@@ -309,6 +339,8 @@ def retry_errors():
         f"{len(songs)} "
         f"FAILED SONGS"
     )
+
+    print()
 
     manager = (
         DownloadManager()

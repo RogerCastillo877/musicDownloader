@@ -46,7 +46,7 @@ def initialize():
 
             duration_seconds REAL,
 
-            success INTEGER,
+            status TEXT,
 
             error TEXT,
 

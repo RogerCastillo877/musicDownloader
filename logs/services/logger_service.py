@@ -101,3 +101,25 @@ class LoggerService:
                 f"FAILED={failed}"
             ),
         )
+    
+    def not_found(
+        self,
+        song,
+        candidate,
+    ):
+
+        with open(
+            "logs/not_found.log",
+            "a",
+            encoding="utf-8",
+        ) as f:
+
+            f.write(
+                (
+                    f"{datetime.now().isoformat()} | "
+                    f"{song.artist} | "
+                    f"{song.title} | "
+                    f"{candidate.score:.2f} | "
+                    f"{candidate.title}\n"
+                )
+            )
