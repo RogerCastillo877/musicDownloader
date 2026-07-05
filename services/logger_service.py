@@ -3,40 +3,18 @@ from datetime import datetime
 
 
 class LoggerService:
-
     LOG_DIR = Path("logs")
 
     def __init__(self):
+        self.LOG_DIR.mkdir(exist_ok=True)
 
-        self.LOG_DIR.mkdir(
-            exist_ok=True
-        )
+    def _write(self, filename: str, text: str) -> None:
+        path = self.LOG_DIR / filename
+        with open(path, "a", encoding="utf-8") as handle:
+            handle.write(text)
+            handle.write("\n")
 
-    def _write(
-        self,
-        filename,
-        text,
-    ):
-
-        path = (
-            self.LOG_DIR /
-            filename
-        )
-
-        with open(
-            path,
-            "a",
-            encoding="utf-8",
-        ) as f:
-
-            f.write(text)
-            f.write("\n")
-
-    def success(
-        self,
-        result,
-    ):
-
+    def success(self, result) -> None:
         self._write(
             "downloads.log",
             (
@@ -52,11 +30,7 @@ class LoggerService:
             ),
         )
 
-    def error(
-        self,
-        result,
-    ):
-
+    def error(self, result) -> None:
         self._write(
             "errors.log",
             (
@@ -67,31 +41,18 @@ class LoggerService:
             ),
         )
 
-    def ambiguous(
-        self,
-        song,
-        winner,
-        second,
-    ):
-
+    def ambiguous(self, song, winner, second) -> None:
         self._write(
             "ambiguous.log",
             (
                 f"{datetime.now().isoformat()} | "
-                f"{song.artist} - "
-                f"{song.title} | "
+                f"{song.artist} - {song.title} | "
                 f"{winner.score:.2f} | "
                 f"{second.score:.2f}"
             ),
         )
 
-    def duplicate(
-        self,
-        original,
-        duplicate,
-        similarity,
-    ):
-
+    def duplicate(self, original, duplicate, similarity) -> None:
         self._write(
             "duplicates.log",
             (
@@ -103,13 +64,7 @@ class LoggerService:
             ),
         )
 
-    def summary(
-        self,
-        requested,
-        success,
-        failed,
-    ):
-
+    def summary(self, requested, success, failed) -> None:
         self._write(
             "summary.log",
             (
@@ -119,25 +74,15 @@ class LoggerService:
                 f"FAILED={failed}"
             ),
         )
-    
-    def not_found(
-        self,
-        song,
-        candidate,
-    ):
 
-        with open(
-            "logs/not_found.log",
-            "a",
-            encoding="utf-8",
-        ) as f:
-
-            f.write(
-                (
-                    f"{datetime.now().isoformat()} | "
-                    f"{song.artist} | "
-                    f"{song.title} | "
-                    f"{candidate.score:.2f} | "
-                    f"{candidate.title}\n"
-                )
-            )
+    def not_found(self, song, candidate) -> None:
+        self._write(
+            "not_found.log",
+            (
+                f"{datetime.now().isoformat()} | "
+                f"{song.artist} | "
+                f"{song.title} | "
+                f"{candidate.score:.2f} | "
+                f"{candidate.title}"
+            ),
+        )

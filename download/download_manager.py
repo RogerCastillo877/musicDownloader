@@ -10,7 +10,7 @@ from download.youtube_downloader import (
     YoutubeDownloader,
 )
 
-from logs.services.logger_service import LoggerService
+from services.logger_service import LoggerService
 
 from storage.download_repository import (
     DownloadRepository

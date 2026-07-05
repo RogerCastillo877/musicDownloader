@@ -15,7 +15,7 @@ from download.youtube_downloader import (
 from core.models import DownloadJob, DownloadResult, DownloadStatus, Song
 from storage.download_repository import DownloadRepository
 from datetime import datetime
-from logs.services.logger_service import LoggerService
+from services.logger_service import LoggerService
 from config.settings import load_settings, Settings
 
 song = Song(

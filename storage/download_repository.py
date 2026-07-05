@@ -1,148 +1,81 @@
-from storage.database import (
-    get_connection,
-)
+from storage.database import get_connection
 
 
 class DownloadRepository:
-
-    def exists(
-        self,
-        artist,
-        title,
-    ):
-
-        conn = get_connection()
-
-        row = conn.execute(
-            """
-            SELECT id
-            FROM downloads
-            WHERE
-                artist=?
-            AND
-                title=?
-            AND
-                success=1
-            LIMIT 1
-            """,
-            (
-                artist,
-                title,
-            ),
-        ).fetchone()
-
-        conn.close()
-
+    def exists(self, artist: str, title: str) -> bool:
+        with get_connection() as conn:
+            row = conn.execute(
+                """
+                SELECT id
+                FROM downloads
+                WHERE artist=? AND title=? AND status='success'
+                LIMIT 1
+                """,
+                (artist, title),
+            ).fetchone()
         return row is not None
 
-    def save(
-        self,
-        result,
-    ):
-
-        conn = get_connection()
-
-        conn.execute(
-            """
-            INSERT INTO downloads
-            (
-                artist,
-                title,
-                downloaded_title,
-                filename,
-                extension,
-                codec,
-                bitrate,
-                duration_seconds,
-                success,
-                error,
-                downloaded_at
+    def save(self, result) -> None:
+        with get_connection() as conn:
+            conn.execute(
+                """
+                INSERT INTO downloads (
+                    artist,
+                    title,
+                    downloaded_title,
+                    filename,
+                    extension,
+                    codec,
+                    bitrate,
+                    duration_seconds,
+                    status,
+                    error,
+                    downloaded_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    result.song.artist,
+                    result.song.title,
+                    result.downloaded_title,
+                    result.filename,
+                    result.extension,
+                    result.codec,
+                    result.bitrate,
+                    result.duration_seconds,
+                    result.status.value,
+                    result.error,
+                    result.finished_at,
+                ),
             )
-            VALUES
-            (
-                ?,?,?,?,?,?,?,?,?,?,?
+            conn.commit()
+
+    def delete_failed(self, artist: str, title: str) -> None:
+        with get_connection() as conn:
+            conn.execute(
+                """
+                DELETE FROM downloads
+                WHERE artist=? AND title=? AND status='failed'
+                """,
+                (artist, title),
             )
-            """,
-            (
-                result.song.artist,
-                result.song.title,
-                result.downloaded_title,
-                result.filename,
-                result.extension,
-                result.codec,
-                result.bitrate,
-                result.duration_seconds,
-                result.status.value,
-                result.error,
-                result.finished_at,
-            ),
-        )
-
-        conn.commit()
-
-        conn.close()
-    
-    def delete_failed(
-        self,
-        artist,
-        title,
-    ):
-
-        conn = get_connection()
-
-        conn.execute(
-            """
-            DELETE
-            FROM downloads
-            WHERE
-                artist=?
-            AND
-                title=?
-            AND
-                success=0
-            """,
-            (
-                artist,
-                title,
-            ),
-        )
-
-        conn.commit()
-
-        conn.close()
+            conn.commit()
 
     def get_failed(self):
+        with get_connection() as conn:
+            return conn.execute(
+                """
+                SELECT DISTINCT artist, title
+                FROM downloads
+                WHERE status='failed'
+                """
+            ).fetchall()
 
-        conn = get_connection()
-
-        rows = conn.execute(
-            """
-            SELECT DISTINCT
-                artist,
-                title
-            FROM downloads
-            WHERE status='failed'
-            """
-        ).fetchall()
-
-        conn.close()
-
-        return rows
-    
     def get_not_found(self):
-
-        conn = get_connection()
-
-        rows = conn.execute(
-            """
-            SELECT DISTINCT
-                artist,
-                title
-            FROM downloads
-            WHERE status='not_found'
-            """
-        ).fetchall()
-
-        conn.close()
-
-        return rows
+        with get_connection() as conn:
+            return conn.execute(
+                """
+                SELECT DISTINCT artist, title
+                FROM downloads
+                WHERE status='not_found'
+                """
+            ).fetchall()
